@@ -1,0 +1,129 @@
+.transfer-list,
+.saga {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.transfer-list {
+  border-top: 1px solid var(--line);
+}
+
+.transfer {
+  border-bottom: 1px solid var(--line);
+}
+
+.transfer-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 150px 140px;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  padding: 16px 4px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.transfer-parties {
+  font-weight: 600;
+}
+
+.transfer-row time {
+  font-size: 0.875rem;
+}
+
+.transfer-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 4px 4px 24px;
+}
+
+.saga {
+  display: grid;
+  gap: 0;
+}
+
+.saga-step {
+  position: relative;
+  padding: 0 0 18px 30px;
+}
+
+.saga-step::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+
+.saga-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 24px;
+  bottom: 2px;
+  width: 2px;
+  background: var(--line);
+}
+
+.saga-done {
+  color: var(--read);
+}
+
+.saga-done::before {
+  background: currentColor;
+}
+
+.saga-failed {
+  color: var(--danger);
+}
+
+.saga-failed::before {
+  background: var(--danger-soft);
+}
+
+.saga-waiting {
+  color: var(--waiting);
+}
+
+.saga-waiting::before {
+  border-style: dashed;
+  animation: spin 1.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.stream.compact .stream-event {
+  padding-bottom: 4px;
+}
+
+.transfer-events .side-note {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 900px) {
+  .transfer-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .transfer-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .transfer-row time {
+    display: none;
+  }
+}
