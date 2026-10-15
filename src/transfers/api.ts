@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { get, post } from '../shared/api';
+import { findOrNull, get, post } from '../shared/api';
+import { waitForReadModel } from '../shared/consistency';
 import {
   type AccountSummary,
   type CommandResult,
@@ -43,7 +44,11 @@ export interface TransferInput {
 export function useRequestTransfer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: TransferInput) => post<CommandResult>('/transfers', input),
+    mutationFn: async (input: TransferInput) => {
+      const result = await post<CommandResult>('/transfers', input);
+      await waitForReadModel(() => findOrNull<Transfer>(`/transfers/${result.id}`), result.version);
+      return result;
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: transferKeys.all }),
   });
 }
