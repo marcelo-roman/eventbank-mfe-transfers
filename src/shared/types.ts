@@ -7,7 +7,10 @@ export type AccountStatus = 'Open' | 'Closed';
 
 export interface AccountSummary {
   id: string;
+  ownerId: string;
   holder: string;
+  branch: string;
+  number: string;
   currency: string;
   balance: number;
   status: AccountStatus;
@@ -40,4 +43,26 @@ export interface Transfer {
   version: number;
   requestedAt: string;
   updatedAt: string;
+}
+
+export type PixKeyType = 'Cpf' | 'Email' | 'Phone' | 'Random';
+
+export interface PixKey {
+  key: string;
+  type: PixKeyType;
+  maskedKey: string;
+  accountId: string;
+  registeredAt: string;
+}
+
+export interface PixLookup {
+  maskedKey: string;
+  type: PixKeyType;
+  ownerName: string;
+  institution: string;
+}
+
+export interface CustomerProfile {
+  cpf: string;
+  email: string;
 }

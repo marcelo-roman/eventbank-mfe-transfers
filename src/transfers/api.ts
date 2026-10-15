@@ -1,13 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { findOrNull, get, post } from '../shared/api';
-import { waitForReadModel } from '../shared/consistency';
-import {
-  type AccountSummary,
-  type CommandResult,
-  type StoredEvent,
-  type Transfer,
-  type TransferStatus,
-} from '../shared/types';
+import { useQuery } from '@tanstack/react-query';
+import { get } from '../shared/api';
+import { type AccountSummary, type StoredEvent, type Transfer, type TransferStatus } from '../shared/types';
 
 const settled: TransferStatus[] = ['Completed', 'Failed', 'Reversed'];
 
@@ -32,24 +25,6 @@ export function useTransferEvents(id: string, version: number) {
   return useQuery({
     queryKey: transferKeys.events(id, version),
     queryFn: () => get<StoredEvent[]>(`/transfers/${id}/events`),
-  });
-}
-
-export interface TransferInput {
-  sourceAccountId: string;
-  destinationAccountId: string;
-  amount: number;
-}
-
-export function useRequestTransfer() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (input: TransferInput) => {
-      const result = await post<CommandResult>('/transfers', input);
-      await waitForReadModel(() => findOrNull<Transfer>(`/transfers/${result.id}`), result.version);
-      return result;
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: transferKeys.all }),
   });
 }
 

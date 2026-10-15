@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import App from './App';
+import { standaloneAuth } from './shared/standaloneAuth';
 
 const root = document.getElementById('root');
 if (!root) {
@@ -13,8 +14,8 @@ createRoot(root).render(
     <BrowserRouter>
       <main className="standalone">
         <Routes>
-          <Route path="/transfers/*" element={<App />} />
-          <Route path="*" element={<Navigate to="/transfers" replace />} />
+          <Route path="/pix/*" element={<App auth={standaloneAuth()} />} />
+          <Route path="*" element={<Navigate to="/pix" replace />} />
         </Routes>
       </main>
     </BrowserRouter>

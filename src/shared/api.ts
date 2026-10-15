@@ -14,16 +14,26 @@ export class ApiError extends Error {
   }
 }
 
+let tokenProvider: (() => Promise<string>) | null = null;
+
+export function configureApi(getAccessToken: () => Promise<string>): void {
+  tokenProvider = getAccessToken;
+}
+
+async function headers(): Promise<Record<string, string>> {
+  const token = tokenProvider ? await tokenProvider() : null;
+  return token
+    ? { 'content-type': 'application/json', authorization: `Bearer ${token}` }
+    : { 'content-type': 'application/json' };
+}
+
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`/api${path}`, {
-    ...init,
-    headers: { 'content-type': 'application/json' },
-  });
+  const response = await fetch(`/api${path}`, { ...init, headers: await headers() });
   const text = await response.text();
 
   if (!response.ok) {
     const problem = parse(text) as Problem | undefined;
-    throw new ApiError(problem?.detail ?? `The server answered ${response.status}.`, response.status, problem?.code);
+    throw new ApiError(problem?.detail ?? describeStatus(response.status), response.status, problem?.code);
   }
 
   return parse(text) as T;
@@ -37,6 +47,14 @@ export function post<T>(path: string, body?: unknown): Promise<T> {
   return request<T>(path, { method: 'POST', body: body === undefined ? null : JSON.stringify(body) });
 }
 
+export function put<T>(path: string, body: unknown): Promise<T> {
+  return request<T>(path, { method: 'PUT', body: JSON.stringify(body) });
+}
+
+export function del<T>(path: string): Promise<T> {
+  return request<T>(path, { method: 'DELETE' });
+}
+
 export async function findOrNull<T>(path: string): Promise<T | null> {
   try {
     return await get<T>(path);
@@ -46,6 +64,16 @@ export async function findOrNull<T>(path: string): Promise<T | null> {
     }
     throw error;
   }
+}
+
+function describeStatus(status: number): string {
+  if (status === 401) {
+    return 'Your session ended. Sign in again.';
+  }
+  if (status === 403) {
+    return 'You are not allowed to do this.';
+  }
+  return `The server answered ${status}.`;
 }
 
 function parse(text: string): unknown {
