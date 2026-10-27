@@ -1,9 +1,10 @@
 import { type SyntheticEvent, useState } from 'react';
 import { useUser } from '../shared/auth';
 import { ErrorMessage } from '../shared/ErrorMessage';
+import { useLocale } from '../shared/i18n/LocaleContext';
 import { type PixKeyType } from '../shared/types';
 import { useAccounts } from '../transfers/api';
-import { keyTypeLabels, useProfile, useRegisterKey } from './api';
+import { useProfile, useRegisterKey } from './api';
 
 const types: PixKeyType[] = ['Cpf', 'Email', 'Phone', 'Random'];
 
@@ -15,20 +16,18 @@ function presetValue(type: PixKeyType, cpf: string | undefined, email: string): 
 }
 
 function KeyHint({ type, value }: { type: PixKeyType; value: string }) {
+  const { t } = useLocale();
   if (type === 'Random') {
-    return <p className="muted">EventBank generates a random key for you.</p>;
+    return <p className="muted">{t.register.randomHint}</p>;
   }
   if (type === 'Phone') {
     return null;
   }
-  return (
-    <p className="muted">
-      Uses your own {keyTypeLabels[type]}: {value}
-    </p>
-  );
+  return <p className="muted">{t.register.ownHint(t.keyTypes[type], value)}</p>;
 }
 
 export function RegisterKeyForm() {
+  const { t } = useLocale();
   const user = useUser();
   const profile = useProfile();
   const accounts = useAccounts();
@@ -57,9 +56,9 @@ export function RegisterKeyForm() {
 
   return (
     <form className="form" onSubmit={submit}>
-      <h2>Register a key</h2>
+      <h2>{t.register.title}</h2>
       <label className="field">
-        <span>Account</span>
+        <span>{t.register.account}</span>
         <select
           value={target?.id ?? ''}
           onChange={(event) => {
@@ -74,7 +73,7 @@ export function RegisterKeyForm() {
         </select>
       </label>
       <label className="field">
-        <span>Key type</span>
+        <span>{t.register.keyType}</span>
         <select
           value={type}
           onChange={(event) => {
@@ -83,14 +82,14 @@ export function RegisterKeyForm() {
         >
           {types.map((option) => (
             <option key={option} value={option}>
-              {keyTypeLabels[option]}
+              {t.keyTypes[option]}
             </option>
           ))}
         </select>
       </label>
       {type === 'Phone' && (
         <label className="field">
-          <span>Phone</span>
+          <span>{t.register.phone}</span>
           <input
             inputMode="tel"
             value={phone}
@@ -104,7 +103,7 @@ export function RegisterKeyForm() {
       )}
       <KeyHint type={type} value={value} />
       <button type="submit" className="button primary" disabled={register.isPending || !target}>
-        {register.isPending ? 'Registering…' : 'Register key'}
+        {register.isPending ? t.register.registering : t.register.submit}
       </button>
       <ErrorMessage error={register.error} />
     </form>

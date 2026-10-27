@@ -1,24 +1,26 @@
 import { ErrorMessage } from '../shared/ErrorMessage';
 import { formatTime } from '../shared/format';
-import { keyTypeLabels, usePixKeys, useRemoveKey } from './api';
+import { useLocale } from '../shared/i18n/LocaleContext';
+import { usePixKeys, useRemoveKey } from './api';
 import { RegisterKeyForm } from './RegisterKeyForm';
 
 export function KeysPanel() {
+  const { locale, t } = useLocale();
   const keys = usePixKeys();
   const remove = useRemoveKey();
 
   return (
     <div className="split">
       <section aria-labelledby="keys-title">
-        <h2 id="keys-title">Your keys</h2>
+        <h2 id="keys-title">{t.keys.title}</h2>
         <ErrorMessage error={keys.error ?? remove.error} />
-        {keys.data?.length === 0 && <p className="empty">No keys yet. Register one so people can pay you.</p>}
+        {keys.data?.length === 0 && <p className="empty">{t.keys.empty}</p>}
         <ul className="key-list">
           {keys.data?.map((key) => (
             <li key={key.key} className="key-row">
-              <span className="key-type">{keyTypeLabels[key.type]}</span>
+              <span className="key-type">{t.keyTypes[key.type]}</span>
               <span className="key-value">{key.key}</span>
-              <span className="muted">{formatTime(key.registeredAt)}</span>
+              <span className="muted">{formatTime(key.registeredAt, locale)}</span>
               <button
                 type="button"
                 className="button quiet small"
@@ -27,7 +29,7 @@ export function KeysPanel() {
                   remove.mutate(key.key);
                 }}
               >
-                Remove
+                {t.keys.remove}
               </button>
             </li>
           ))}
