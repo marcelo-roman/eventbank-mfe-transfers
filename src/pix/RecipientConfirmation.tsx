@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ErrorMessage } from '../shared/ErrorMessage';
+import { useLocale } from '../shared/i18n/LocaleContext';
 import { type AccountSummary, type PixLookup } from '../shared/types';
-import { keyTypeLabels, useSendPix } from './api';
+import { useSendPix } from './api';
 
 interface RecipientConfirmationProps {
   recipient: PixLookup;
@@ -11,6 +12,7 @@ interface RecipientConfirmationProps {
 }
 
 export function RecipientConfirmation({ recipient, pixKey, source, onSent }: RecipientConfirmationProps) {
+  const { t } = useLocale();
   const send = useSendPix();
   const [amount, setAmount] = useState('');
 
@@ -19,13 +21,13 @@ export function RecipientConfirmation({ recipient, pixKey, source, onSent }: Rec
   };
 
   return (
-    <div className="recipient" aria-label="Recipient">
+    <div className="recipient" aria-label={t.recipient.label}>
       <strong>{recipient.ownerName}</strong>
       <span className="muted">
-        {recipient.institution}, {keyTypeLabels[recipient.type]} {recipient.maskedKey}
+        {recipient.institution}, {t.keyTypes[recipient.type]} {recipient.maskedKey}
       </span>
       <label className="field">
-        <span>Amount in {source.currency}</span>
+        <span>{t.recipient.amount(source.currency)}</span>
         <input
           type="number"
           inputMode="decimal"
@@ -38,7 +40,7 @@ export function RecipientConfirmation({ recipient, pixKey, source, onSent }: Rec
         />
       </label>
       <button type="button" className="button primary" disabled={!amount || send.isPending} onClick={confirm}>
-        {send.isPending ? 'Sending…' : `Send PIX to ${recipient.ownerName}`}
+        {send.isPending ? t.recipient.sending : t.recipient.send(recipient.ownerName)}
       </button>
       <ErrorMessage error={send.error} />
     </div>

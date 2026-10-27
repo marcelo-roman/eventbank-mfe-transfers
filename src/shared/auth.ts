@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import { type Locale } from './i18n/locale';
 
 export interface SessionUser {
   id: string;
@@ -14,6 +15,7 @@ export interface RemoteAuth {
 
 export interface RemoteProps {
   auth: RemoteAuth;
+  locale?: Locale;
 }
 
 export const UserContext = createContext<SessionUser | null>(null);

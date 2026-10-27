@@ -1,11 +1,13 @@
 import { type SyntheticEvent, useState } from 'react';
 import { ErrorMessage } from '../shared/ErrorMessage';
 import { formatMoney } from '../shared/format';
+import { useLocale } from '../shared/i18n/LocaleContext';
 import { useAccounts } from '../transfers/api';
 import { useLookup } from './api';
 import { RecipientConfirmation } from './RecipientConfirmation';
 
 export function SendPixForm() {
+  const { locale, t } = useLocale();
   const accounts = useAccounts();
   const lookup = useLookup();
   const [source, setSource] = useState('');
@@ -21,9 +23,9 @@ export function SendPixForm() {
 
   return (
     <div className="form">
-      <h2>Send a PIX</h2>
+      <h2>{t.send.title}</h2>
       <label className="field">
-        <span>From</span>
+        <span>{t.send.from}</span>
         <select
           value={sourceAccount?.id ?? ''}
           onChange={(event) => {
@@ -32,14 +34,14 @@ export function SendPixForm() {
         >
           {open.map((account) => (
             <option key={account.id} value={account.id}>
-              {account.branch}/{account.number} ({formatMoney(account.balance, account.currency)})
+              {account.branch}/{account.number} ({formatMoney(account.balance, account.currency, locale)})
             </option>
           ))}
         </select>
       </label>
       <form className="form" onSubmit={findKey}>
         <label className="field">
-          <span>Key: CPF, e-mail, phone with +55, or random key</span>
+          <span>{t.send.key}</span>
           <input
             value={key}
             onChange={(event) => {
@@ -50,7 +52,7 @@ export function SendPixForm() {
           />
         </label>
         <button type="submit" className="button" disabled={lookup.isPending}>
-          {lookup.isPending ? 'Looking up…' : 'Look up key'}
+          {lookup.isPending ? t.send.lookingUp : t.send.lookUp}
         </button>
       </form>
       <ErrorMessage error={lookup.error} />

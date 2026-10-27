@@ -11,13 +11,6 @@ import { transferKeys } from '../transfers/api';
 
 const keysKey = ['pix-keys'] as const;
 
-export const keyTypeLabels: Record<PixKeyType, string> = {
-  Cpf: 'CPF',
-  Email: 'E-mail',
-  Phone: 'Phone',
-  Random: 'Random key',
-};
-
 export function usePixKeys() {
   return useQuery({ queryKey: keysKey, queryFn: () => get<PixKey[]>('/pix/keys') });
 }

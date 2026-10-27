@@ -6,10 +6,12 @@ interface Problem {
 export class ApiError extends Error {
   readonly status: number;
   readonly code: string | undefined;
+  readonly detail: string | undefined;
 
-  constructor(message: string, status: number, code?: string) {
-    super(message);
+  constructor(status: number, detail?: string, code?: string) {
+    super(detail ?? `The server answered ${status}.`);
     this.status = status;
+    this.detail = detail;
     this.code = code;
   }
 }
@@ -33,7 +35,7 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const problem = parse(text) as Problem | undefined;
-    throw new ApiError(problem?.detail ?? describeStatus(response.status), response.status, problem?.code);
+    throw new ApiError(response.status, problem?.detail, problem?.code);
   }
 
   return parse(text) as T;
@@ -64,16 +66,6 @@ export async function findOrNull<T>(path: string): Promise<T | null> {
     }
     throw error;
   }
-}
-
-function describeStatus(status: number): string {
-  if (status === 401) {
-    return 'Your session ended. Sign in again.';
-  }
-  if (status === 403) {
-    return 'You are not allowed to do this.';
-  }
-  return `The server answered ${status}.`;
 }
 
 function parse(text: string): unknown {

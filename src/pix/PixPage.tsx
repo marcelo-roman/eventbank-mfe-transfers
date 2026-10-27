@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocale } from '../shared/i18n/LocaleContext';
 import { TransferList } from '../transfers/TransferList';
 import { KeysPanel } from './KeysPanel';
 import { SendPixForm } from './SendPixForm';
@@ -6,16 +7,14 @@ import { SendPixForm } from './SendPixForm';
 type Tab = 'send' | 'keys';
 
 export function PixPage() {
+  const { t } = useLocale();
   const [tab, setTab] = useState<Tab>('send');
 
   return (
     <div className="page">
       <header className="page-header">
-        <h1>PIX</h1>
-        <p className="lede">
-          A key points to an account. Each key is its own event stream, so two people can never register the same one. A
-          PIX runs as a saga: debit you, credit them, refund you if the credit is declined.
-        </p>
+        <h1>{t.pix.title}</h1>
+        <p className="lede">{t.pix.lede}</p>
       </header>
       <div className="tabs" role="tablist">
         <button
@@ -26,7 +25,7 @@ export function PixPage() {
             setTab('send');
           }}
         >
-          Send and history
+          {t.pix.sendTab}
         </button>
         <button
           type="button"
@@ -36,7 +35,7 @@ export function PixPage() {
             setTab('keys');
           }}
         >
-          Your keys
+          {t.pix.keysTab}
         </button>
       </div>
       {tab === 'send' ? (
