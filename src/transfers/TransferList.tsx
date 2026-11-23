@@ -22,7 +22,7 @@ export function TransferList() {
   }
 
   return (
-    <ul className="transfer-list" aria-label={t.transfers.label}>
+    <ul className="list transfer-list" aria-label={t.transfers.label}>
       {transfers.data.map((transfer) => (
         <TransferItem
           key={transfer.id}

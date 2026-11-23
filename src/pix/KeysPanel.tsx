@@ -15,7 +15,7 @@ export function KeysPanel() {
         <h2 id="keys-title">{t.keys.title}</h2>
         <ErrorMessage error={keys.error ?? remove.error} />
         {keys.data?.length === 0 && <p className="empty">{t.keys.empty}</p>}
-        <ul className="key-list">
+        <ul className="list key-list">
           {keys.data?.map((key) => (
             <li key={key.key} className="key-row">
               <span className="key-type">{t.keyTypes[key.type]}</span>
